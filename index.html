@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiln</title>
+<style>
+  :root { --bg:#14110f; --fg:#f0e6dc; --mut:#a8998c; --acc:#ff8a3d; --card:#201b18; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--fg); }
+  main { max-width: 720px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { margin: 0 0 4px; } .sub { color:var(--mut); margin:0 0 20px; }
+  .card { background:var(--card); border-radius:12px; padding:16px; margin-bottom:16px; }
+  label { display:block; margin:10px 0 4px; color:var(--mut); font-size:14px; }
+  input, select { width:100%; padding:10px; border-radius:8px; border:1px solid #3a322d; background:#14110f; color:var(--fg); font-size:16px; }
+  button { margin-top:14px; padding:12px 18px; border:0; border-radius:8px; background:var(--acc); color:#1a1209; font-weight:600; font-size:16px; cursor:pointer; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  td, th { text-align:left; padding:8px 6px; border-bottom:1px solid #3a322d; }
+  .best { border:1px solid var(--acc); }
+  .tag { color:var(--mut); font-size:13px; }
+  .no { color:#c0665a; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Kiln</h1>
+  <p class="sub">Tell it your hardware. It tells you what you can actually run, no purchase required.</p>
+
+  <div class="card">
+    <div id="detect" class="tag">Detecting…</div>
+    <label for="vram">GPU memory (GB). 0 if CPU-only. For unified-memory machines, enter the usable pool.</label>
+    <input id="vram" type="number" min="0" step="1" value="8">
+    <label for="ram">System RAM (GB)</label>
+    <input id="ram" type="number" min="1" step="1" value="16">
+    <label for="bw">Hardware class (sets the speed ceiling)</label>
+    <select id="bw"></select>
+    <button id="go">Recommend</button>
+  </div>
+
+  <div id="out"></div>
+</main>
+
+<script type="module">
+import { recommend, BANDWIDTH_PRESETS } from "./tuner.js";
+
+const $ = (id) => document.getElementById(id);
+for (const [k, v] of Object.entries(BANDWIDTH_PRESETS)) {
+  const o = document.createElement("option");
+  o.value = v.gbps; o.textContent = `${v.label} (~${v.gbps} GB/s)`;
+  if (k === "gpu-mid") o.selected = true;
+  $("bw").appendChild(o);
+}
+
+async function detect() {
+  const bits = [];
+  if (navigator.deviceMemory) bits.push(`RAM hint: ${navigator.deviceMemory}GB (browsers cap this at 8)`);
+  if (navigator.hardwareConcurrency) bits.push(`${navigator.hardwareConcurrency} CPU threads`);
+  if (navigator.gpu) {
+    try {
+      const a = await navigator.gpu.requestAdapter();
+      if (a) {
+        const mb = Math.round(a.limits.maxBufferSize / 1048576);
+        bits.push(`WebGPU: yes (max buffer ${mb} MB)`);
+      } else bits.push("WebGPU: no adapter");
+    } catch { bits.push("WebGPU: unavailable"); }
+  } else bits.push("WebGPU: not supported in this browser");
+  bits.push("Browsers don't expose VRAM, so enter it yourself.");
+  $("detect").textContent = bits.join(" · ");
+}
+detect();
+
+$("go").onclick = () => {
+  const hw = { vramGB: +$("vram").value, ramGB: +$("ram").value, bandwidthGBps: +$("bw").value };
+  const { best, all } = recommend(hw);
+  const rows = all.map((r) => `<tr>
+    <td>${r.label}</td>
+    <td class="${r.mode === "wont-fit" ? "no" : ""}">${r.mode}</td>
+    <td>${r.estTokS ? "~" + r.estTokS + " tok/s" : "-"}</td></tr>`).join("");
+  $("out").innerHTML = `
+    <div class="card best"><strong>${best ? "Best fit: " + best.label : "Nothing runs comfortably on this hardware."}</strong>
+    <div class="tag">${best ? best.note + " Estimates only." : "Try a smaller model or a rented/free GPU (Colab, Kaggle)."}</div></div>
+    <div class="card"><table><tr><th>Model (Q4)</th><th>Mode</th><th>Est. speed</th></tr>${rows}</table>
+    <p class="tag">Speed = bandwidth ÷ bytes read per token, at ~45-60% efficiency (MoE is lower). Real results vary.</p></div>`;
+};
+</script>
+</body>
+</html>
