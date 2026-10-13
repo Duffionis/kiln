@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiln Chat</title>
+<style>
+  :root { --bg:#14110f; --fg:#f0e6dc; --mut:#a8998c; --acc:#ff8a3d; --card:#201b18; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--fg); }
+  main { max-width: 720px; margin: 0 auto; padding: 20px 16px 48px; }
+  .card { background:var(--card); border-radius:12px; padding:16px; margin-bottom:16px; }
+  label { display:block; margin:10px 0 4px; color:var(--mut); font-size:14px; }
+  select, textarea { width:100%; padding:10px; border-radius:8px; border:1px solid #3a322d; background:#14110f; color:var(--fg); font-size:16px; font-family:inherit; }
+  button { margin-top:12px; padding:12px 18px; border:0; border-radius:8px; background:var(--acc); color:#1a1209; font-weight:600; font-size:16px; cursor:pointer; }
+  button:disabled { opacity:.4; cursor:not-allowed; }
+  pre { white-space:pre-wrap; word-wrap:break-word; margin:0; font:inherit; }
+  .tag { color:var(--mut); font-size:13px; }
+  a { color:var(--acc); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Kiln Chat</h1>
+  <p class="tag"><a href="./">Back to the tuner</a>. The model runs on your own GPU through WebGPU.</p>
+
+  <div class="card">
+    <label for="model">Model (smallest first, if size info is available)</label>
+    <select id="model"></select>
+    <button id="load">Load model</button>
+    <div id="status" class="tag" style="margin-top:10px">Pick a model and click Load. The first load downloads it.</div>
+  </div>
+
+  <div class="card">
+    <label for="prompt">Your message</label>
+    <textarea id="prompt" rows="3">Explain in two sentences why LLM speed depends on memory bandwidth.</textarea>
+    <button id="send" disabled>Send</button>
+  </div>
+
+  <div class="card">
+    <pre id="reply" class="tag">The reply will appear here.</pre>
+    <div id="stats" class="tag" style="margin-top:10px"></div>
+  </div>
+</main>
+
+<script type="module">
+import { CreateMLCEngine, prebuiltAppConfig } from "https://esm.run/@mlc-ai/web-llm";
+
+const $ = (id) => document.getElementById(id);
+
+if (!navigator.gpu) $("status").textContent = "WebGPU is not available in this browser.";
+
+const models = prebuiltAppConfig.model_list.filter((m) => !/embed/i.test(m.model_id));
+models.sort((a, b) => (a.vram_required_MB ?? 1e9) - (b.vram_required_MB ?? 1e9));
+for (const m of models) {
+  const o = document.createElement("option");
+  o.value = m.model_id;
+  o.textContent = m.model_id + (m.vram_required_MB ? ` (~${Math.round(m.vram_required_MB)} MB)` : "");
+  $("model").appendChild(o);
+}
+
+let engine = null;
+
+$("load").onclick = async () => {
+  $("load").disabled = true;
+  $("send").disabled = true;
+  try {
+    engine = await CreateMLCEngine($("model").value, {
+      initProgressCallback: (p) => { $("status").textContent = p.text; },
+    });
+    $("status").textContent = "Model ready: " + $("model").value;
+    $("send").disabled = false;
+  } catch (e) {
+    $("status").textContent = "Load failed: " + e.message;
+  }
+  $("load").disabled = false;
+};
+
+$("send").onclick = async () => {
+  $("send").disabled = true;
+  $("reply").textContent = "";
+  $("stats").textContent = "";
+  let reply = "", chunksSeen = 0, usage = null;
+  const t0 = performance.now();
+  try {
+    const stream = await engine.chat.completions.create({
+      messages: [{ role: "user", content: $("prompt").value }],
+      stream: true,
+      stream_options: { include_usage: true },
+    });
+    for await (const chunk of stream) {
+      const d = chunk.choices[0]?.delta?.content;
+      if (d) { reply += d; chunksSeen++; $("reply").textContent = reply; }
+      if (chunk.usage) usage = chunk.usage;
+    }
+    const secs = (performance.now() - t0) / 1000;
+    const dec = usage?.extra?.decode_tokens_per_s;
+    $("stats").textContent = dec
+      ? `Decode speed: ${dec.toFixed(1)} tok/s (reported by WebLLM)`
+      : `No usage stats returned. Rough speed: ~${(chunksSeen / secs).toFixed(1)} chunks/s over ${secs.toFixed(1)}s (includes prompt time)`;
+  } catch (e) {
+    $("stats").textContent = "Error: " + e.message;
+  }
+  $("send").disabled = false;
+};
+</script>
+</body>
+</html>
