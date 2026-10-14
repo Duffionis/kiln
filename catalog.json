@@ -13,7 +13,11 @@
    "local",
    "colab"
   ],
-  "tested": null,
+  "tested": {
+   "where": "colab",
+   "machine": "Colab free runtime, Tesla T4 (15 GB), CUDA 13.0, llama.cpp build 23deec0",
+   "result": "Qwen2.5-1.5B-Instruct Q5_K_M (1.19 GiB). GPU (ngl 99): pp512 4635 t/s, tg128 136.6 t/s. ngl 0 run: pp512 1492 t/s (likely GPU-assisted), tg128 5.96 t/s. Single run each; CUDA build took 550 s."
+  },
   "notes": "Planned core of the local helper."
  },
  {
