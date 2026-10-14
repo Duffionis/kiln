@@ -19,6 +19,7 @@ export const BANDWIDTH_PRESETS = {
   "gpu-mid":    { label: "Mid GPU (~8-12GB)",         gbps: 300 },
   "gpu-3090":   { label: "High-end GPU (3090-class)", gbps: 936 },
   "strix-halo": { label: "Strix Halo-class APU",      gbps: 215 },
+  "colab-t4":   { label: "Free Colab/Kaggle T4 (16 GB)", gbps: 320 },
 };
 
 const OVERHEAD_GB = 1.5;   // KV cache + runtime headroom (grows with context)
