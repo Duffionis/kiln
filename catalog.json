@@ -1,0 +1,321 @@
+[
+ {
+  "id": "llama-cpp",
+  "name": "llama.cpp",
+  "category": "LLM inference",
+  "sources": [
+   "spark-playbooks",
+   "jetson-containers"
+  ],
+  "license": "MIT",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "local",
+   "colab"
+  ],
+  "tested": null,
+  "notes": "Planned core of the local helper."
+ },
+ {
+  "id": "ollama",
+  "name": "Ollama",
+  "category": "LLM inference",
+  "sources": [
+   "spark-playbooks",
+   "jetson-containers"
+  ],
+  "license": "MIT",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "local"
+  ],
+  "tested": null,
+  "notes": "Easy model serving; has a Jetson tutorial."
+ },
+ {
+  "id": "vllm",
+  "name": "vLLM",
+  "category": "LLM inference",
+  "sources": [
+   "spark-playbooks",
+   "jetson-containers"
+  ],
+  "license": "Apache-2.0",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "colab",
+   "nvidia-gpu"
+  ],
+  "tested": null,
+  "notes": "High-throughput serving; expects an Nvidia GPU."
+ },
+ {
+  "id": "sglang",
+  "name": "SGLang",
+  "category": "LLM inference",
+  "sources": [
+   "spark-playbooks",
+   "jetson-containers"
+  ],
+  "license": "Apache-2.0",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "colab",
+   "nvidia-gpu"
+  ],
+  "tested": null,
+  "notes": "Reuses code from other projects with their own terms."
+ },
+ {
+  "id": "tensorrt-llm",
+  "name": "TensorRT-LLM",
+  "category": "LLM inference",
+  "sources": [
+   "spark-playbooks",
+   "nvidia-blog"
+  ],
+  "license": "Apache-2.0 (per repo label; third-party notices not reviewed)",
+  "licenseStatus": "partial",
+  "expected": [
+   "nvidia-gpu"
+  ],
+  "tested": null,
+  "notes": "Nvidia-optimized; FP4 support targets newer chips. Likely 'not free' in our labels."
+ },
+ {
+  "id": "webllm-mlc",
+  "name": "WebLLM / MLC",
+  "category": "LLM inference",
+  "sources": [
+   "jetson-containers"
+  ],
+  "license": "Apache-2.0 (web-llm repo only; MLC-LLM not checked)",
+  "licenseStatus": "partial",
+  "expected": [
+   "browser"
+  ],
+  "tested": {
+   "where": "browser",
+   "machine": "Ryzen 7 5700U iGPU, 8GB RAM, Firefox",
+   "result": "SmolLM2-135M ran at 5.5 then 9.3 tok/s; 1B model blocked by Hugging Face 429 rate limit"
+  },
+  "notes": "Core of the in-browser tier."
+ },
+ {
+  "id": "unsloth",
+  "name": "Unsloth",
+  "category": "Fine-tuning",
+  "sources": [
+   "spark-playbooks"
+  ],
+  "license": "Apache-2.0 core; AGPL-3.0 optional parts (e.g. Studio UI)",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "colab"
+  ],
+  "tested": null,
+  "notes": "Candidate for free-GPU QLoRA notebooks. Use the core package only."
+ },
+ {
+  "id": "llama-factory",
+  "name": "LLaMA Factory",
+  "category": "Fine-tuning",
+  "sources": [
+   "spark-playbooks"
+  ],
+  "license": "Apache-2.0",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "colab"
+  ],
+  "tested": null,
+  "notes": ""
+ },
+ {
+  "id": "nemo",
+  "name": "NVIDIA NeMo",
+  "category": "Fine-tuning",
+  "sources": [
+   "spark-playbooks",
+   "nvidia-blog"
+  ],
+  "license": "Apache-2.0",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "nvidia-gpu"
+  ],
+  "tested": null,
+  "notes": "Training framework, mainly for larger setups."
+ },
+ {
+  "id": "open-webui",
+  "name": "Open WebUI",
+  "category": "Chat UI",
+  "sources": [
+   "spark-playbooks",
+   "jetson-ai-lab"
+  ],
+  "license": "Custom Open WebUI License (branding requirement)",
+  "licenseStatus": "partial",
+  "expected": [
+   "local"
+  ],
+  "tested": null,
+  "notes": "Check its license terms before bundling anything. Do not bundle or rebrand without reading the full license."
+ },
+ {
+  "id": "comfyui",
+  "name": "ComfyUI",
+  "category": "Image generation",
+  "sources": [
+   "spark-playbooks",
+   "jetson-containers"
+  ],
+  "license": "GPL-3.0",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "local",
+   "colab"
+  ],
+  "tested": null,
+  "notes": "Copyleft: do not bundle; link to upstream or install in the user's own notebook."
+ },
+ {
+  "id": "whisper",
+  "name": "whisper / faster-whisper",
+  "category": "Speech",
+  "sources": [
+   "jetson-containers"
+  ],
+  "license": "MIT (whisper code and weights; faster-whisper also MIT)",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "local",
+   "browser"
+  ],
+  "tested": null,
+  "notes": "Browser version to be tested."
+ },
+ {
+  "id": "piper",
+  "name": "piper",
+  "category": "Speech",
+  "sources": [
+   "jetson-containers"
+  ],
+  "license": "GPL-3.0 (piper1-gpl repo)",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "local"
+  ],
+  "tested": null,
+  "notes": "Text to speech. Copyleft: do not bundle. Repo page asks for maintainers."
+ },
+ {
+  "id": "sam",
+  "name": "Segment Anything / NanoSAM",
+  "category": "Vision",
+  "sources": [
+   "jetson-containers"
+  ],
+  "license": "Apache-2.0 (code); SA-1B dataset has a separate research license; NanoSAM not checked",
+  "licenseStatus": "partial",
+  "expected": [
+   "colab"
+  ],
+  "tested": null,
+  "notes": "NanoSAM is the TensorRT variant for Jetson."
+ },
+ {
+  "id": "nanoowl",
+  "name": "NanoOWL",
+  "category": "Vision",
+  "sources": [
+   "jetson-containers",
+   "nvidia-ai-iot"
+  ],
+  "license": "not stated on the page I read",
+  "licenseStatus": "unverified",
+  "expected": [
+   "nvidia-gpu"
+  ],
+  "tested": null,
+  "notes": "Needs a Jetson Orin with TensorRT."
+ },
+ {
+  "id": "jetson-inference",
+  "name": "jetson-inference",
+  "category": "Vision",
+  "sources": [
+   "nvidia-ai-iot"
+  ],
+  "license": "BSD-3 (appears to be, unconfirmed)",
+  "licenseStatus": "unverified",
+  "expected": [
+   "nvidia-gpu"
+  ],
+  "tested": null,
+  "notes": "Needs a Jetson dev kit, TensorRT, and JetPack."
+ },
+ {
+  "id": "physx",
+  "name": "PhysX",
+  "category": "Physics / 3D",
+  "sources": [
+   "nvidia-omniverse"
+  ],
+  "license": "BSD-3-Clause",
+  "licenseStatus": "verified",
+  "expected": [
+   "local"
+  ],
+  "tested": null,
+  "notes": "C++ SDK. Whether a web build is practical is unchecked."
+ },
+ {
+  "id": "usd-exchange",
+  "name": "OpenUSD Exchange SDK",
+  "category": "Physics / 3D",
+  "sources": [
+   "nvidia-omniverse"
+  ],
+  "license": "Apache-2.0",
+  "licenseStatus": "verified",
+  "expected": [
+   "local"
+  ],
+  "tested": null,
+  "notes": "Authoring consistent USD scenes."
+ },
+ {
+  "id": "isaac-lab",
+  "name": "Isaac Lab",
+  "category": "Robotics sim",
+  "sources": [
+   "spark-playbooks",
+   "nvidia-omniverse"
+  ],
+  "license": "BSD-3-Clause (some dependencies under other terms)",
+  "licenseStatus": "verified",
+  "expected": [
+   "nvidia-gpu"
+  ],
+  "tested": null,
+  "notes": "Isaac Sim code is Apache-2.0 but needs the Kit SDK and assets under separate NVIDIA terms."
+ },
+ {
+  "id": "cosmos-edge",
+  "name": "Cosmos 3 Edge (4B)",
+  "category": "World models",
+  "sources": [
+   "press-article"
+  ],
+  "license": "OpenMDW 1.1 (per press report)",
+  "licenseStatus": "unverified",
+  "expected": [
+   "nvidia-gpu"
+  ],
+  "tested": null,
+  "notes": "Described as running on RTX, DGX and Jetson. Not checked on free hardware."
+ }
+]

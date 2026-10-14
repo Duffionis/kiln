@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiln Catalog</title>
+<style>
+  :root { --bg:#14110f; --fg:#f0e6dc; --mut:#a8998c; --acc:#ff8a3d; --card:#201b18; --ok:#6fbf73; --warn:#d9a441; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--fg); }
+  main { max-width: 860px; margin: 0 auto; padding: 20px 16px 48px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+  select, input { padding:10px; border-radius:8px; border:1px solid #3a322d; background:#14110f; color:var(--fg); font-size:16px; }
+  input[type=text] { flex:1; min-width:160px; }
+  .card { background:var(--card); border-radius:12px; padding:14px 16px; margin-bottom:12px; }
+  .name { font-weight:600; }
+  .tag { color:var(--mut); font-size:13px; }
+  .chip { display:inline-block; font-size:12px; padding:2px 8px; border-radius:99px; border:1px solid #3a322d; margin:4px 6px 0 0; }
+  .ok { color:var(--ok); border-color:var(--ok); }
+  .warn { color:var(--warn); border-color:var(--warn); }
+  a { color:var(--acc); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Kiln Catalog</h1>
+  <p class="tag"><a href="./">Tuner</a> · <a href="chat.html">Chat</a>. Where tools are expected to run. Nothing counts as working until it is tested.</p>
+  <div class="row">
+    <input id="q" type="text" placeholder="Search tools">
+    <select id="cat"><option value="">All categories</option></select>
+    <select id="where">
+      <option value="">Runs anywhere</option>
+      <option value="browser">Browser</option>
+      <option value="local">Local PC</option>
+      <option value="colab">Free Colab/Kaggle</option>
+      <option value="nvidia-gpu">Needs Nvidia GPU</option>
+    </select>
+    <label class="tag"><input id="tested" type="checkbox"> Tested only</label>
+  </div>
+  <div id="count" class="tag"></div>
+  <div id="list"></div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+let data = [];
+
+function chip(text, cls) {
+  const s = document.createElement("span");
+  s.className = "chip " + (cls || "");
+  s.textContent = text;
+  return s;
+}
+
+function render() {
+  const q = $("q").value.toLowerCase();
+  const cat = $("cat").value, where = $("where").value, testedOnly = $("tested").checked;
+  const rows = data.filter((t) =>
+    (!q || (t.name + " " + t.category + " " + t.notes).toLowerCase().includes(q)) &&
+    (!cat || t.category === cat) &&
+    (!where || t.expected.includes(where)) &&
+    (!testedOnly || t.tested));
+  $("count").textContent = rows.length + " of " + data.length + " tools";
+  const list = $("list");
+  list.replaceChildren();
+  for (const t of rows) {
+    const card = document.createElement("div");
+    card.className = "card";
+    const n = document.createElement("div");
+    n.className = "name";
+    n.textContent = t.name;
+    const c = document.createElement("div");
+    c.className = "tag";
+    c.textContent = t.category + (t.notes ? " · " + t.notes : "");
+    card.append(n, c);
+    for (const w of t.expected) card.append(chip("expected: " + w));
+    card.append(chip("license: " + t.license, ["verified","label-checked"].includes(t.licenseStatus) ? "ok" : "warn"));
+    card.append(chip(t.tested ? "tested" : "untested", t.tested ? "ok" : "warn"));
+    if (t.tested) {
+      const r = document.createElement("div");
+      r.className = "tag";
+      r.textContent = "Result (" + t.tested.machine + "): " + t.tested.result;
+      card.append(r);
+    }
+    list.append(card);
+  }
+}
+
+fetch("catalog.json").then((r) => r.json()).then((d) => {
+  data = d;
+  for (const c of [...new Set(d.map((t) => t.category))]) {
+    const o = document.createElement("option");
+    o.value = o.textContent = c;
+    $("cat").append(o);
+  }
+  render();
+}).catch((e) => { $("count").textContent = "Could not load catalog.json: " + e.message; });
+
+for (const id of ["q", "cat", "where", "tested"]) $(id).addEventListener("input", render);
+</script>
+</body>
+</html>
