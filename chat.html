@@ -61,17 +61,34 @@ for (const m of models) {
 
 let engine = null;
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 $("load").onclick = async () => {
   $("load").disabled = true;
   $("send").disabled = true;
-  try {
-    engine = await CreateMLCEngine($("model").value, {
-      initProgressCallback: (p) => { $("status").textContent = p.text; },
-    });
-    $("status").textContent = "Model ready: " + $("model").value;
-    $("send").disabled = false;
-  } catch (e) {
-    $("status").textContent = "Load failed: " + e.message;
+  const waits = [30, 60, 120, 240]; // seconds to wait between retries after a rate limit
+  for (let attempt = 0; ; attempt++) {
+    try {
+      engine = await CreateMLCEngine($("model").value, {
+        initProgressCallback: (p) => { $("status").textContent = p.text; },
+      });
+      $("status").textContent = "Model ready: " + $("model").value;
+      $("send").disabled = false;
+      break;
+    } catch (e) {
+      const limited = /429|too many requests/i.test(e.message || "");
+      if (limited && attempt < waits.length) {
+        for (let s = waits[attempt]; s > 0; s--) {
+          $("status").textContent = `Download limited by the host (429). Retrying in ${s}s (attempt ${attempt + 1} of ${waits.length})...`;
+          await sleep(1000);
+        }
+        continue;
+      }
+      $("status").textContent = limited
+        ? "The model host is rate-limiting downloads. Wait a few minutes and click Load again."
+        : "Load failed: " + e.message;
+      break;
+    }
   }
   $("load").disabled = false;
 };
