@@ -321,5 +321,97 @@
   ],
   "tested": null,
   "notes": "Described as running on RTX, DGX and Jetson. Not checked on free hardware."
+ },
+ {
+  "id": "bitnet",
+  "name": "BitNet (bitnet.cpp)",
+  "category": "LLM inference",
+  "sources": [
+   "microsoft"
+  ],
+  "license": "MIT",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "local"
+  ],
+  "tested": null,
+  "notes": "1-bit models on CPU and GPU. Speedup and energy figures are the project's own claims, untested here. Candidate for the weak-hardware CPU tier."
+ },
+ {
+  "id": "onnxruntime-genai",
+  "name": "ONNX Runtime GenAI",
+  "category": "LLM inference",
+  "sources": [
+   "microsoft"
+  ],
+  "license": "MIT",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "local",
+   "browser"
+  ],
+  "tested": null,
+  "notes": "Runs Phi, Qwen, Llama, Gemma, gpt-oss and Whisper. Backends include CPU, CUDA, DirectML and WebGPU. DirectML may suit Windows AMD iGPUs (untested)."
+ },
+ {
+  "id": "markitdown",
+  "name": "MarkItDown",
+  "category": "Documents / RAG",
+  "sources": [
+   "microsoft"
+  ],
+  "license": "MIT",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "local",
+   "colab"
+  ],
+  "tested": null,
+  "notes": "Converts PDF, Office files and more to Markdown for document Q&A. Python only."
+ },
+ {
+  "id": "transformers-js",
+  "name": "Transformers.js",
+  "category": "Browser runtime",
+  "sources": [
+   "huggingface"
+  ],
+  "license": "Apache-2.0",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "browser"
+  ],
+  "tested": null,
+  "notes": "Detection, segmentation, speech and embeddings in the browser. WebGPU optional (experimental in many browsers)."
+ },
+ {
+  "id": "wllama",
+  "name": "wllama",
+  "category": "LLM inference",
+  "sources": [
+   "community"
+  ],
+  "license": "MIT",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "browser"
+  ],
+  "tested": null,
+  "notes": "llama.cpp in WebAssembly. Files limited to 2 GB, so split models (chunks of 512 MB or less). WebGPU optional."
+ },
+ {
+  "id": "exo",
+  "name": "exo",
+  "category": "LLM inference",
+  "sources": [
+   "community"
+  ],
+  "license": "Apache-2.0",
+  "licenseStatus": "label-checked",
+  "expected": [
+   "local"
+  ],
+  "tested": null,
+  "notes": "Pools devices to run bigger models. Mac GPU; Linux CPU only per its README; Windows not mentioned."
  }
 ]
